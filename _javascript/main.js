@@ -1,6 +1,43 @@
+let elements = {};
+const generateButton = document.getElementById('generateButton');
+const outputModal = document.getElementById('outputModal');
+const closeModalElements = document.getElementsByClassName('close');
+const outputTextarea = document.getElementById('outputTextarea');
+const downloadButton = document.getElementById('downloadButton');
+
+generateButton.addEventListener("click", () => {
+    generate();
+    outputModal.classList.add("is-active");
+});
+
+downloadButton.addEventListener("click", () => {
+    let element = document.createElement('a');
+    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(outputTextarea.value));
+    element.setAttribute('download', 'serverconfig.txt');
+    element.style.display = 'none';
+    document.body.appendChild(element);
+    element.click();
+});
+
+for (let element of closeModalElements) {
+    element.addEventListener("click", () => {
+        outputModal.classList.remove("is-active");
+    });
+}
+
+document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+        outputModal.classList.remove("is-active");
+    }
+});
+
 document.addEventListener('DOMContentLoaded', () => {
     main();
 });
+
+function generateID() {
+    return (Math.random().toString(36).replace(/[^a-z]+/g, '').substr(2, 10)).toUpperCase();
+}
 
 function createTextInput(name, default_value, description) {
     let input = document.createElement("input");
@@ -28,6 +65,9 @@ function createSelectInput(name, default_value, description, options) {
         let option = document.createElement("option");
         option.setAttribute("value", options[i].name);
         option.value = options[i].value;
+        if (i === default_value) {
+            option.selected = true;
+        }
         option.innerHTML = options[i].name;
         input.appendChild(option);
     }
@@ -91,6 +131,7 @@ function createTables() {
 
         if (e.length === undefined) {
             let label = document.createElement("h3");
+            label.classList.add("is-size-3");
             label.innerHTML = e.description;
             fields.appendChild(label);
             fields.appendChild(e.input);
@@ -99,12 +140,30 @@ function createTables() {
 
             let table = document.createElement("table");
             table.classList.add("table");
+            table.classList.add("is-bordered");
+            table.classList.add("is-fullwidth");
+            // Create the header
+            let thead = document.createElement("thead");
+            let tr = document.createElement("tr");
+            for (let item of ["Name", "Value", "Description"]) {
+                let th = document.createElement("th");
+                th.innerHTML = item;
+                tr.appendChild(th);
+            }
+            thead.appendChild(tr);
+            table.appendChild(thead);
+
             let tbody = document.createElement("tbody");
             table.appendChild(tbody);
 
             for (let key in e) {
                 let element = e[key];
                 let tr = document.createElement("tr");
+                tr.id = element.id;
+
+                let nameColumn = document.createElement("td");
+                nameColumn.innerHTML = `<code>${element.name}</code>`;
+                tr.appendChild(nameColumn);
 
                 let inputColumn = document.createElement("td");
                 inputColumn.appendChild(element.input);
@@ -123,21 +182,39 @@ function createTables() {
     });
 }
 
-var elements = {};
+function generate() {
+    let output = "";
+
+    for (let key in elements) {
+        let element = elements[key];
+        if (element.input.tagName !== "HR") {
+            let html_element = document.getElementById(element.id);
+            let cell = html_element.getElementsByTagName("td")[1];
+            let input = cell.getElementsByTagName("input")[0];
+            if (!input) {
+                input = cell.getElementsByTagName("select")[0];
+            }
+
+            let value = input.value;
+            if (element.input.type === "checkbox") {
+                value = input.checked ? "1" : "0";
+            }
+
+            output += `${element.name} = ${value}\n`;
+        }
+    }
+
+    // Remove the last newline
+    output = output.slice(0, -1);
+
+    outputTextarea.value = output;
+}
 
 function main() {
     // Loop through the PROPS object and create a form for each property
     for (let i = 0; i < PROPS.length; i++) {
         let prop = PROPS[i];
         let input;
-        // let form = document.createElement("form");
-        // form.setAttribute("class", "field");
-        // let label = document.createElement("label");
-        // label.setAttribute("class", "label");
-        // label.innerHTML = prop.name;
-        // form.appendChild(label);
-        // let input = null;
-        // console.log(prop.type);
         switch (prop.type) {
             case "text":
                 input = createTextInput(prop.name, prop.default, prop.description);
@@ -169,8 +246,7 @@ function main() {
 
         // form.appendChild(input);
         elements[prop.name] = {
-            "input": input,
-            "description": desc
+            "name": prop.name, "input": input, "description": desc, id: generateID()
         };
     }
 
