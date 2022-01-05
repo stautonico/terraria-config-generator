@@ -19,7 +19,7 @@
         "start": "npm-run-all --parallel css-watch js-watch",
         "build-deploy": "npm run css-deploy && npm run js-build && npm run build"
     },
-    "devDependencies": {
+    "dependencies": {
         "@babel/cli": "^7.16.0",
         "@babel/core": "^7.16.5",
         "autoprefixer": "^10.4.0",
