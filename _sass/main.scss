@@ -28,6 +28,10 @@ $primary-invert: $pink-invert;
 
 @import "../node_modules/bulma/bulma";
 
+.is-active {
+  display: flex;
+}
+
 .emoji {
     color: transparent;
     text-shadow: 0 0 0 $primary;
