@@ -2,9 +2,9 @@
     "name": "terraria-config-generator",
     "version": "1.0.0",
     "description": "",
-    "keywords": "",
+    "keywords": [],
     "license": "",
-    "author": "",
+    "author": "Steve Tautonico",
     "scripts": {
         "build": "parcel build index.html",
         "dev": "parcel index.html --open",
