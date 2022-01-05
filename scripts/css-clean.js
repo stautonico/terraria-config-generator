@@ -13,13 +13,11 @@ let options = {
 }
 
 uncss(['index.html'], options, (error, output) => {
-    // console.log(error);
     if (output) {
         // Open the file and write the output
         fs.writeFile('css/main.css', output, (err) => {
             if (err) throw err;
-            console.log('File written!');
+            console.log('UnCSS complete!');
         });
     }
-    // console.log(output);
 });

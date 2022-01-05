@@ -10,11 +10,11 @@
         "dev": "parcel index.html --open",
         "test": "echo \"Error: no test specified\" && exit 1",
         "css-deploy": "npm run css-build && npm run css-postcss && node ./scripts/css-clean.js",
-        "css-build": "node-sass _sass/main.scss css/main.css",
+        "css-build": "node-sass sass/main.scss css/main.css",
         "css-postcss": "postcss --use autoprefixer --output css/main.css css/main.css",
         "css-watch": "npm run css-build -- --watch",
         "deploy": "npm run css-deploy && npm run js-build",
-        "js-build": "mkdir -p _javascript && babel _javascript --out-dir lib",
+        "js-build": "mkdir -p javascript && babel javascript --out-dir lib",
         "js-watch": "npm run js-build -- --watch",
         "start": "npm-run-all --parallel css-watch js-watch",
         "build-deploy": "npm run css-deploy && npm run js-build && npm run build"
